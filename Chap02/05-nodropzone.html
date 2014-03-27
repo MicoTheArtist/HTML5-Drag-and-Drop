@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<!-- 
+    nodropzone.html by Bill Weinman 
+    <http://bw.org/contact/>
+    created 2011-07-12
+    updated 2011-07-17
+
+    Copyright (c) 2011 The BearHeart Group, LLC
+    This file may be used for personal educational purposes as needed. 
+    Use for other purposes is granted provided that this notice is
+    retained and any changes made are clearly indicated as such. 
+-->
+
+<head>
+    <title>
+        HTML5 Drag and Drop
+    </title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" >
+    <link rel="stylesheet" type="text/css" href="../CSS/main.css" />
+    <link rel="stylesheet" type="text/css" href="../CSS/rps.css" />
+    <script type="text/javascript" src="../Javascript/bwH5.js"></script>
+    <script type="text/javascript">
+        var dndSupported;    // true if drag and drop supported
+        var sourceID;
+        var payloads = {
+            img1: "I Am a Rock",
+            img2: "I Am Paper",
+            img3: "I Am Scissors"
+        };
+
+        function detectDragAndDrop() {
+            if (navigator.appName == 'Microsoft Internet Explorer') {
+                var ua = navigator.userAgent;
+                var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");		// reg expression for IE6
+                if (re.exec(ua) != null) {  								// if regular expression (re) is executed (exec) on user agent (ua) returns a string value
+																			// NOTE: exec - This method returns the matched text if it finds a match, otherwise it returns null. 
+										    								// ex: RegExpObject.exec(string)
+                    var rv = parseFloat( RegExp.$1 );						// first checks $1  -- The $number variables contain the parts of the string that matched the capturing groups in the pattern for your last regex match if the match was successful
+																			// parseFloat() - this function parses a string and returns a floating point number, if no number is available, it returns null
+                    if(rv >= 6.0) return true;
+				}
+                return false;
+            }
+            if ('draggable' in document.createElement('span')) return true;	// looks to see if the draggable attribute exists in the span tag.
+            return false;
+        }
+
+        function handleDragStart(event) {
+            sourceID = this.id;
+            statusMessage('drag started (' + payloads[sourceID] + ')');		// NOTE: payloads[] is an array found at the top of the javascript
+        }
+		
+        function handleDragOver(event) {
+            if(event.preventDefault) event.preventDefault();
+            return false;   // some browsers may need this to prevent default action
+        }
+
+        function handleDrop(event) {
+            if(event.preventDefault) event.preventDefault();				// this is needed however, it is not known why?
+            statusMessage('received drop: ' + payloads[sourceID]);
+        }
+
+
+        function init() {
+            if((dndSupported = detectDragAndDrop())) {
+                statusMessage('Using HTML5 Drag and Drop');
+                element('img1').addEventListener('dragstart', handleDragStart, false);
+                element('dz1').addEventListener('dragover', handleDragOver, false);
+                element('dz1').addEventListener('drop', handleDrop, false);
+            } else {
+                statusMessage('This browser does not support Drag and Drop');
+            }
+        }
+
+        window.onload = function() {
+            init();
+        }
+    </script>
+</head>
+
+<body>         
+    <div id="content">
+    
+        <h1> 
+            HTML5 Drag and Drop
+        </h1>
+        
+        <p class="message" id="statusMessage" />
+    
+        <div id="columns">
+            <div class="rps"><img id="img1" src="../Images/Rock.png" draggable="true" /><footer>Rock</footer></div>
+            <div class="rps" id="dz1" ><img src="../Images/DropZone.png" /><footer>Drop Here</Footer></div>
+        </div>
+    
+        <p id="clear" /> <!-- provide some space at the bottom -->
+        
+    </div>
+</body>
+</html>
